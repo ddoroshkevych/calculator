@@ -12,8 +12,8 @@ function App() {
   const [answer, setAnswer] = useState(null);
   const [screen, setScreen] = useState(0);
   const [tumbler, setTumbler] = useState(true);
-  const [lastButton, setLastButton] = useState(null);
-  const [gotAnswer, setGotAnswer] = useState(false);
+  // const [buffer, setBuffer] = useState(null);
+  // const [gotAnswer, setGotAnswer] = useState(false);
 
   useEffect(() => {
     setScreen(firstOperand);
@@ -23,9 +23,9 @@ function App() {
     setScreen(secondOperand);
   }, [secondOperand]);
 
-  useEffect(() => {
-    setScreen(operator);
-  }, [operator]);
+  // useEffect(() => {
+  //   setScreen(operator);
+  // }, [operator]);
 
   useEffect(() => {
     setScreen(answer);
@@ -43,41 +43,89 @@ function App() {
     setFirstOperand("");
     setSecondOperand("");
     setOperator(null);
-    setGotAnswer(true);
+    //setGotAnswer(true);
     setOpd1Ready(false);
     setOpd2Ready(false);
     setOperatorReady(false);
   }
 
   function handleNum(event) {
+    console.log(
+      "Num  - opd1=",
+      firstOperand,
+      "sign=",
+      operator,
+      "opd2=",
+      secondOperand
+    );
     const value = event.target.value;
 
     //if (!secondOperand && !operator) {
     if (!opd2Ready && !operatorReady) {
       setFirstOperand((prevFirstOperand) => prevFirstOperand + value); // 1 opd
-      //setScreen(firstOperand);
+      setOpd1Ready(true);
+
       return;
     }
 
     //if (firstOperand && operator) {
     if (opd1Ready && operatorReady) {
       setSecondOperand((prevSecondOperand) => prevSecondOperand + value); // 2 opd
-      //setScreen(secondOperand);
+      setOpd2Ready(true);
+
       return;
     }
   }
 
+  function processAnswer(a, b, op) {
+    switch (op) {
+      case "+":
+        return +a + +b;
+      case "-":
+        return +a - +b;
+      case "*":
+        return +a * +b;
+      case "/":
+        return +a / +b;
+    }
+  }
+
   function handleOp(event) {
+    console.log(
+      "Oper  - opd1=",
+      firstOperand,
+      "sign=",
+      operator,
+      "opd2=",
+      secondOperand
+    );
     const value = event.target.value;
 
-    setOpd1Ready(true);
+    if (firstOperand) {
+      setOpd1Ready(true);
+    } else return;
+
+    if (opd1Ready && operatorReady && secondOperand) {
+      setSecondOperand("");
+
+      setAnswer(processAnswer(firstOperand, secondOperand, operator));
+
+      setOperator(value);
+      setFirstOperand(processAnswer(firstOperand, secondOperand, operator));
+
+      setOpd1Ready(true);
+      setOpd2Ready(false);
+      setOperatorReady(true);
+
+      return;
+    }
 
     if (firstOperand && !secondOperand) {
       setOperator(value);
+      setOperatorReady(true);
       //setScreen(operator);
+      return;
     }
-
-    setOperatorReady(true);
   }
 
   function processEqual() {
@@ -105,6 +153,8 @@ function App() {
   function resetAll() {
     setFirstOperand("");
     setSecondOperand("");
+    setOpd1Ready(false);
+    setOpd2Ready(false);
     setAnswer(0);
     setOperator(null);
     setScreen(0);
