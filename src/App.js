@@ -208,11 +208,11 @@ function App() {
   return (
     <div className="App">
       {/* <p>{wholeLine}</p> */}
-      <p>1st opd = {firstOperand}</p>
+      {/* <p>1st opd = {firstOperand}</p>
       <p>2nd opd = {secondOperand}</p>
       <p>operation = {operator}</p>
-      <p>answer = {answer}</p>
-      <p>Screen = {screen}</p>
+      <p>answer = {answer}</p> */}
+      <p>{screen}</p>
 
       <button onClick={handleNum} value={"7"}>
         7
