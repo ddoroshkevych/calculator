@@ -12,6 +12,7 @@ function App() {
   const [answer, setAnswer] = useState(null);
   const [screen, setScreen] = useState(0);
   const [tumbler, setTumbler] = useState(true);
+  //const [wholeLine, setWholeLine] = useState("");
   // const [buffer, setBuffer] = useState(null);
   // const [gotAnswer, setGotAnswer] = useState(false);
 
@@ -56,15 +57,18 @@ function App() {
       "sign=",
       operator,
       "opd2=",
-      secondOperand
+      secondOperand,
+      "answer=",
+      answer
     );
     const value = event.target.value;
+    // setWholeLine((prev) => prev + value);
 
     //if (!secondOperand && !operator) {
     if (!opd2Ready && !operatorReady) {
       setFirstOperand((prevFirstOperand) => prevFirstOperand + value); // 1 opd
       setOpd1Ready(true);
-
+      //setWholeLine(prev => prev + value);
       return;
     }
 
@@ -72,7 +76,7 @@ function App() {
     if (opd1Ready && operatorReady) {
       setSecondOperand((prevSecondOperand) => prevSecondOperand + value); // 2 opd
       setOpd2Ready(true);
-
+      //setWholeLine((prev) => prev + value);
       return;
     }
   }
@@ -80,7 +84,7 @@ function App() {
   function processAnswer(a, b, op) {
     switch (op) {
       case "+":
-        return +a + +b;
+        return Number(a) + Number(b);
       case "-":
         return +a - +b;
       case "*":
@@ -97,9 +101,12 @@ function App() {
       "sign=",
       operator,
       "opd2=",
-      secondOperand
+      secondOperand,
+      "answer=",
+      answer
     );
     const value = event.target.value;
+    //setWholeLine((prev) => prev + value);
 
     if (firstOperand) {
       setOpd1Ready(true);
@@ -129,10 +136,12 @@ function App() {
   }
 
   function processEqual() {
+    if (!opd1Ready || !operatorReady || !secondOperand) return;
+
     setOpd2Ready(true);
     switch (operator) {
       case "+":
-        setAnswer(+firstOperand + +secondOperand);
+        setAnswer(Number(firstOperand) + Number(secondOperand));
         prepareToNextAction();
         return;
       case "-":
@@ -150,20 +159,46 @@ function App() {
     }
   }
 
+  function handleDot(event) {
+    const value = event.target.value;
+
+    if (!operatorReady) {
+      if (firstOperand.split("").includes(",") === true) {
+        return;
+      } else {
+        setFirstOperand((prevFirstOperand) => prevFirstOperand + value); // 1 opd
+        return;
+      }
+    } else {
+      if (secondOperand.split("").includes(",") === true) {
+        return;
+      } else {
+        setSecondOperand((prevSecondOperand) => prevSecondOperand + value); // 2 opd
+        return;
+      }
+    }
+  }
+
   function resetAll() {
     setFirstOperand("");
     setSecondOperand("");
     setOpd1Ready(false);
     setOpd2Ready(false);
-    setAnswer(0);
     setOperator(null);
+    setOperatorReady(false);
+    setAnswer(0);
     setScreen(0);
     setTumbler((prevTumbler) => !prevTumbler);
   }
 
   return (
     <div className="App">
-      <p>{screen}</p>
+      {/* <p>{wholeLine}</p> */}
+      <p>1st opd = {firstOperand}</p>
+      <p>2nd opd = {secondOperand}</p>
+      <p>operation = {operator}</p>
+      <p>answer = {answer}</p>
+      <p>Screen = {screen}</p>
 
       <button onClick={handleNum} value={"7"}>
         7
@@ -207,7 +242,7 @@ function App() {
       <button onClick={handleNum} value={"0"}>
         0
       </button>
-      <button disabled={true} value={","}>
+      <button onClick={handleDot} disabled={false} value={"."}>
         ,
       </button>
       <button onClick={processEqual} value={"="}>
