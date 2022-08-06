@@ -14,7 +14,7 @@ function App() {
   const [tumbler, setTumbler] = useState(true);
   //const [wholeLine, setWholeLine] = useState("");
   // const [buffer, setBuffer] = useState(null);
-  // const [gotAnswer, setGotAnswer] = useState(false);
+  const [gotAnswer, setGotAnswer] = useState(false);
 
   useEffect(() => {
     setScreen(firstOperand);
@@ -94,6 +94,8 @@ function App() {
     }
   }
 
+  //------------------------------ Handle operator ------------------------------
+
   function handleOp(event) {
     console.log(
       "Oper  - opd1=",
@@ -108,8 +110,19 @@ function App() {
     const value = event.target.value;
     //setWholeLine((prev) => prev + value);
 
-    if (firstOperand) {
+    if (answer && !firstOperand) {
+      // act immediately after answer
+      setFirstOperand(answer);
       setOpd1Ready(true);
+      setOperator(value);
+      setOperatorReady(true);
+
+      console.log("act immed");
+      return;
+    }
+
+    if (firstOperand) {
+      setOpd1Ready(true); // if op is pressed, opd1 is ready
     } else return;
 
     if (opd1Ready && operatorReady && secondOperand) {
@@ -187,6 +200,7 @@ function App() {
     setOperator(null);
     setOperatorReady(false);
     setAnswer(0);
+    setGotAnswer(false);
     setScreen(0);
     setTumbler((prevTumbler) => !prevTumbler);
   }
