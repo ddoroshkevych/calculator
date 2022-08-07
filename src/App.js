@@ -9,8 +9,7 @@ function App() {
   const [log, setLog] = useState("");
   const [startNew, setStartNew] = useState(true);
 
-  const handleNum = (evt)=>{
-    const value = evt.target.value;
+  const handleNum = (value)=>{
     setLog(log+value);
     setCurrent(startNew ? value : current + value );
     setStartNew(false);
@@ -23,11 +22,11 @@ function App() {
     setStartNew(true);
   }
 
-  const handleOp = (evt)=>{
-    setLog(log+evt.target.value);
+  const handleOp = (value)=>{
+    setLog(log + value);
     setLastOperand(Number.parseFloat(current));
     setStartNew(true);
-    setOperator(evt.target.value);
+    setOperator(value);
   }
   const handleDot = ()=>{
     setLog(log+".");
@@ -45,63 +44,23 @@ function App() {
     setStartNew(true);
   }
 
+  const handleButton = (evt)=>{
+    const val = evt.target.value;
+    const code = val.charCodeAt(0);
+    if(code>=48 && code <= 57){
+      handleNum(val)
+    }
+    if(code === 46) handleDot();
+    if(code === 61) processEqual();
+    if("/+-*".indexOf(val) >= 0) handleOp(val);
+  }
+
   console.log(current,lastOperand,operator);
 
   return (
     <div className="App">
       <p>{current}</p>
-      <button onClick={handleNum} value={"7"}>
-        7
-      </button>
-      <button onClick={handleNum} value={"8"}>
-        8
-      </button>
-      <button onClick={handleNum} value={"9"}>
-        9
-      </button>
-      <button onClick={handleOp} value={"/"}>
-        /
-      </button>
-      <br />
-      <button onClick={handleNum} value={"4"}>
-        4
-      </button>
-      <button onClick={handleNum} value={"5"}>
-        5
-      </button>
-      <button onClick={handleNum} value={"6"}>
-        6
-      </button>
-      <button onClick={handleOp} value={"*"}>
-        *
-      </button>
-      <br />
-      <button onClick={handleNum} value={"1"}>
-        1
-      </button>
-      <button onClick={handleNum} value={"2"}>
-        2
-      </button>
-      <button onClick={handleNum} value={"3"}>
-        3
-      </button>
-      <button onClick={handleOp} value={"-"}>
-        -
-      </button>
-      <br />
-      <button onClick={handleNum} value={"0"}>
-        0
-      </button>
-      <button onClick={handleDot} disabled={false} value={"."}>
-        ,
-      </button>
-      <button onClick={processEqual} value={"="}>
-        =
-      </button>
-      <button onClick={handleOp} value={"+"}>
-        +
-      </button>
-      <br />
+      {"789/456*123-0.=+".split("").map((ch,idx)=><><button key={idx} onClick={handleButton} value={ch}>{ch}</button>{(idx+1)%4 === 0 && <br/>}</>)}
       <button onClick={resetAll}>C</button>
       <p>{log}</p>
     </div>
